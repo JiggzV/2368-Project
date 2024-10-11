@@ -34,38 +34,57 @@ CREATE TABLE IF NOT EXISTS Investor(
 id INT AUTO_INCREMENT,
 firstname VARCHAR(60) NOT NULL,
 lastname INT(50) NOT NULL,
-
+PRIMARY KEY(id)
 
 );
+''')
 
+cursor.execute('''
 CREATE TABLE IF NOT EXISTS Stock(
 id INT AUTO_INCREMENT,
 stockname VARCHAR(60) NOT NULL,
 abbreviation VARCHAR(50) NOT NULL,
-currentprice DECIMAL(10, 2), 
-               
-);
+currentprice DECIMAL(10, 2),
+PRIMARY KEY(id)
 
-               
+);
+''')
+
+cursor.execute('''
 CREATE TABLE IF NOT EXISTS Bond(
 id INT AUTO_INCREMENT,
 stockname VARCHAR(60) NOT NULL,
 abbreviation VARCHAR(50) NOT NULL,
 currentprice DECIMAL(10, 2), 
-               
+PRIMARY KEY(id)
+              
 );
-               
+''')     
 
-
+cursor.execute('''
 CREATE TABLE IF NOT EXISTS Stocktransaction(
 id INT AUTO_INCREMENT,
-date TIMESTAMP DEFAULT CURRENT_TIMESTAMP ,
+date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 investorid INT,
 stockid INT, 
 quantity INT,
-PRIMARY KEY (id)
+PRIMARY KEY (id),
 FOREIGN KEY (investorid) REFERENCES Investor(id),
-FOREIGN KEY (stockid) REFERENCES Stock(id)             
+FOREIGN KEY (stockid) REFERENCES Stock(id)            
+);
+
+ ''')
+              
+cursor.execute('''
+CREATE TABLE IF NOT EXISTS Bondtransaction(
+id INT AUTO_INCREMENT,
+date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+investorid INT,
+bondid INT, 
+quantity INT,
+PRIMARY KEY (id),
+FOREIGN KEY (investorid) REFERENCES Investor(id),
+FOREIGN KEY (bondid) REFERENCES Bond(id)            
 );
 
 
