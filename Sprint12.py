@@ -6,6 +6,7 @@ from flask import jsonify
 from flask import request
 
 
+
 #Setting the Application name
 app = flask.Flask(__name__) #Sets up the application
 app.config["DEBUG"] = True #Allow to show errors in browser
@@ -33,7 +34,7 @@ cursor.execute('''
 CREATE TABLE IF NOT EXISTS Investor(
 id INT AUTO_INCREMENT,
 firstname VARCHAR(60) NOT NULL,
-lastname INT(50) NOT NULL,
+lastname VARCHAR(50) NOT NULL,
 PRIMARY KEY(id)
 
 );
@@ -89,3 +90,50 @@ FOREIGN KEY (bondid) REFERENCES Bond(id)
 
 
 ''')
+
+#In this section, We will create all of the CRUD APIs for the Investor Table
+@app.route('/api/Investors/<id>', methods = ['GET'])
+def get_investor(id):
+    cursor = conn.cursor
+    cursor.execute("SELECT * FROM Investors WHERE id = %s", (id,))
+    data = cursor.fetchone()
+    if data:
+        return jsonify({'id': data[0], 'firstname': data[1], 'lastname': data[2]})
+    else:
+        return jsonify({'message': 'Not found'})
+    
+
+@app.route('/api/Investors/', methods = ['GET'])
+def get_all_investor():
+    cursor.execute("SELECT * FROM Investors WHERE id = %s", (id,))
+    data = cursor.fetchall()
+    if data:
+        investors = []
+        for row in data:
+            investors.append({'id': row[0], 'firstname': row[1], 'lastname': row[2]})
+        return jsonify({'investors': investors})
+    else:
+        return jsonify({'message': 'Not found'})
+    
+
+
+@app.route('/api/Investors/', methods = ['POST'])
+def post_investor():
+    data = request.get_json()
+    if 'firstname' not in data or 'lastname' not in data:
+        return jsonify({'message': 'Missing info'}), 400
+    
+    try:
+        cursor.execute("INSERT INTO Investor(firstname, lastname) VALUES (%s, %s)", (data['firstname'], data['lastname']))
+        conn.commit()
+        return jsonify({'message': 'Investor created successfully'}), 201
+    except mysql.connector.Error as e:
+        return jsonify({'message': f'Error: {e}'}), 500
+
+@app.route('/api/Investors/<id>', methods = ['POST'])
+def updateinvestor(id):
+    data = request.get_json()
+    if 'firstname' not in data or 'lastname' not in data:
+        return jsonify 
+
+app.run()
