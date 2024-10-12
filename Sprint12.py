@@ -332,7 +332,7 @@ def get_investor_portfolio(id):
 
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 
-# Transaction APIs for Stocktransaction Table
+# Transaction APIs for Stocktransaction and Bondtransaction Table
 @app.route('/api/Transactions/', methods=['POST'])
 def make_transaction():
     data = request.get_json()
@@ -355,7 +355,7 @@ def make_transaction():
                 cursor.execute("INSERT INTO Stocktransaction (investorid, stockid, quantity) VALUES (%s, %s, %s)",
                                (investor_id, asset_id, quantity))
             elif 'bond' in data:
-                cursor.execute("INSERT INTO Bondtransaction (investorid, bondid, quanitity) VALUES (%s, %s, %s)",
+                cursor.execute("INSERT INTO Bondtransaction (investorid, bondid, quantity) VALUES (%s, %s, %s)",
                                (investor_id, asset_id, quantity))
             else:
                 return jsonify({'Message': 'Invalid Asset'}), 400
@@ -389,13 +389,26 @@ def make_transaction():
     except mysql.connector.Error as e:
         return jsonify({'Message': 'Unknown error'}), 500
                     
+''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+#This section includes the ability to delete transactions from tables: 'Bondtransaction' and 'Stocktransaction'
 
 
+@app.route('/api/Bondtransactions/<id>', methods = ['DELETE'])
+def delete_bondtransaction(id):
+    cursor = conn.cursor()
+    query = "DELETE FROM Bondtransaction WHERE id = %s"
+    cursor.execute(query, (id,))
+    conn.commit()
+    return jsonify({'message': 'The Bond Transaction has been successfully deleted!'}), 200
 
 
-
-
-
+@app.route('/api/Stocktransactions/<id>', methods=['DELETE'])
+def delete_stocktransaction(id):
+    cursor = conn.cursor()
+    query = "DELETE FROM Stocktransaction WHERE id = %s"
+    cursor.execute(query, (id,))
+    conn.commit()
+    return jsonify({'Message': 'Stock Transaction has been successfully deleted'}), 200
 
 
 
