@@ -155,6 +155,7 @@ def delete_investor(id):
 
 
 ''''''''''''''''''''''''''''''''''''
+#In this section, we will create all of the endpoints for the "Bond" table.
 
 @app.route('/api/Bonds/', methods = ['POST'])
 def create_bond():
@@ -213,6 +214,72 @@ def delete_bond(id):
     cursor.execute(query, (id,))
     conn.commit()
     return jsonify({'message': 'Bond Deleted'}), 200
+
+
+''''''''''''''''''''''''''''''''''''''''''''''''
+#In this Section, we will implement the endpoints for the Stock table.
+#I'm pretty much going to be using the same code used for my Bond Table
+
+@app.route('/api/Stocks/', methods = ['POST'])
+def create_stock():
+    cursor = conn.cursor()
+    stockname = request.json['stockname']
+    abbreviation = request.json['abbreviation']
+    currentprice = request.json['currentprice']
+    query = "INSERT INTO Stock (stockname, abbreviation, currentprice) VALUES (%s, %s, %s)"
+    cursor.execute(query, (stockname, abbreviation, currentprice))
+    conn.commit()
+    return jsonify({'message': 'Bond has been created'}), 201
+
+
+@app.route('/api/Stocks/', methods = ['GET'])
+def get_allstock():
+    cursor = conn.cursor()
+    query = "SELECT * FROM Stock"
+    cursor.execute(query)
+    stock = cursor.fetchall()
+    if stock:
+        columns = [desc[0]for desc in cursor.description]
+        stock_list = [dict(zip(columns, row)) for row in stock]
+        return jsonify(stock_list)
+    else:
+        return jsonify({'Message': 'Not found'}), 404
+
+
+@app.route('/api/Stocks/<id>', methods = ['GET'])
+def get_astock(id):
+    cursor = conn.cursor()
+    query = "SELECT * FROM Stock WHERE id = %s"
+    cursor.execute(query, (id,))
+    stock = cursor.fetchone()
+    if stock:
+        columns = [desc[0]for desc in cursor.description]
+        stock_dict = dict(zip(columns, stock))
+        return jsonify(stock_dict)
+    else:
+        return jsonify({'Message': 'Not found'}), 404
+
+
+@app.route('/api/Stocks/<id>', methods = ['PUT'])
+def update_stock(id):
+    cursor = conn.cursor()
+    stockname = request.json['stockname']
+    abbreviation = request.json['abbreviation']
+    currentprice = request.json['currentprice']
+    query = "UPDATE Stock SET stockname = %s, abbreviation = %s, currentprice = %s WHERE id = %s"
+    cursor.execute(query, (stockname, abbreviation, currentprice, id))
+    conn.commit()
+    return jsonify({'message': 'Stock has been updated'}), 200
+
+
+
+@app.route('/api/Stocks/<id>', methods = ['DELETE'])
+def delete_stock(id):
+    cursor = conn.cursor()
+    query = "DELETE FROM Stock WHERE id = %s"
+    cursor.execute(query, (id,))
+    conn.commit()
+    return jsonify({'message': 'Stock Deleted'}), 200
 
 
 app.run()
