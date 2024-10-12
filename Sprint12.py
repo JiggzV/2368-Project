@@ -1,6 +1,7 @@
 import mysql.connector
 from mysql.connector import Error
 
+
 import flask
 from flask import jsonify
 from flask import request
@@ -143,6 +144,13 @@ def update_investor(id):
     except mysql.connector.Error as e:
         return jsonify({'message': f'An error occurred: {e}'}), 500
      
+@app.route('/api/Investors/<id>', methods = ['DELETE'])
+def delete_investor(id):
+    cursor = conn.cursor()
+    query = "DELETE FROM Investor WHERE id = %s"
+    cursor.execute(query, (id,))
+    conn.commit()
+    return jsonify({'message': 'Investor Deleted'}), 200
 
 
 app.run()
