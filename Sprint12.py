@@ -153,4 +153,66 @@ def delete_investor(id):
     return jsonify({'message': 'Investor Deleted'}), 200
 
 
+
+''''''''''''''''''''''''''''''''''''
+
+@app.route('/api/Bonds/', methods = ['POST'])
+def create_bond():
+    cursor = conn.cursor()
+    bondname = request.json['bondname']
+    abbreviation = request.json['abbreviation']
+    currentprice = request.json['currentprice']
+    query = "INSERT INTO Bond (bondname, abbreviation, currentprice) VALUES (%s, %s, %s)"
+    cursor.execute(query, (bondname, abbreviation, currentprice))
+    conn.commit()
+    return jsonify({'message': 'Bond has been created'}), 201
+
+@app.route('/api/Bonds/', methods = ['GET'])
+def get_allbond():
+    cursor = conn.cursor()
+    query = "SELECT * FROM Bond"
+    cursor.execute(query)
+    bond = cursor.fetchall()
+    if bond:
+        columns = [desc[0]for desc in cursor.description]
+        bond_list = [dict(zip(columns, row)) for row in bond]
+        return jsonify(bond_list)
+    else:
+        return jsonify({'Message': 'Not found'}), 404
+
+@app.route('/api/Bonds/<id>', methods = ['GET'])
+def get_abond(id):
+    cursor = conn.cursor()
+    query = "SELECT * FROM Bond WHERE id = %s"
+    cursor.execute(query, (id,))
+    bond = cursor.fetchone()
+    if bond:
+        columns = [desc[0]for desc in cursor.description]
+        bond_dict = dict(zip(columns, bond))
+        return jsonify(bond_dict)
+    else:
+        return jsonify({'Message': 'Not found'}), 404
+
+
+@app.route('/api/Bonds/<id>', methods = ['PUT'])
+def update_bond(id):
+    cursor = conn.cursor()
+    bondname = request.json['bondname']
+    abbreviation = request.json['abbreviation']
+    currentprice = request.json['currentprice']
+    query = "UPDATE Bond SET bondname = %s, abbreviation = %s, currentprice = %s WHERE id = %s"
+    cursor.execute(query, (bondname, abbreviation, currentprice, id))
+    conn.commit()
+    return jsonify({'message': 'Bond has been updated'}), 200
+
+
+@app.route('/api/Bonds/<id>', methods = ['DELETE'])
+def delete_bond(id):
+    cursor = conn.cursor()
+    query = "DELETE FROM Bond WHERE id = %s"
+    cursor.execute(query, (id,))
+    conn.commit()
+    return jsonify({'message': 'Bond Deleted'}), 200
+
+
 app.run()
