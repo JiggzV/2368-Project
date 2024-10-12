@@ -331,7 +331,9 @@ def get_investor_portfolio(id):
 
 
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-@app.route('/ap/Transactions/', methods=['POST'])
+
+# Transaction APIs for Stocktransaction Table
+@app.route('/api/Transactions/', methods=['POST'])
 def make_transaction():
     data = request.get_json()
 
@@ -364,7 +366,29 @@ def make_transaction():
                                (investor_id, asset_id))
                 result = cursor.fetchone()
                 if result and result[0] >= quantity:
-                    cursor.execute("INSERT INTO Stocktransaction()")
+                    cursor.execute("INSERT INTO Stocktransaction (investorid, stockid, quantity) VALUES (%s, %s, %s)",
+                                   (investor_id, asset_id, -quantity))
+                
+                else:
+                    return jsonify({'Message': 'Not enough stock to sell'}), 400
+            elif 'bond' in data:
+                cursor.execute("SELECT quantity FROM Bondtransaction WHERE investorid = %s AND bondid = %s",
+                               (investor_id, asset_id))
+                result = cursor.fetchone()
+                if result and result[0] >= quantity:
+                    cursor.execute("INSERT INTO Bondtransaction (investorid, bondid, quantity) VALUES (%s, %s, %s)",
+                                   (investor_id, asset_id, -quantity))
+                else:
+                    return jsonify({'message': 'Not enough bonds to sell'}), 400
+            else:
+                return jsonify({'Message': 'Invalid Asset'}), 400
+            
+        conn.commit()
+        return jsonify({'Message': 'Transaction successful'}), 201
+        
+    except mysql.connector.Error as e:
+        return jsonify({'Message': 'Unknown error'}), 500
+                    
 
 
 
