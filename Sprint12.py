@@ -130,10 +130,19 @@ def post_investor():
     except mysql.connector.Error as e:
         return jsonify({'message': f'Error: {e}'}), 500
 
-@app.route('/api/Investors/<id>', methods = ['POST'])
-def updateinvestor(id):
+@app.route('/api/Investors/<id>', methods = ['PUT'])
+def update_investor(id):
     data = request.get_json()
     if 'firstname' not in data or 'lastname' not in data:
-        return jsonify 
+        return jsonify({'message': 'Missing Info'}), 400
+    
+    try: 
+        cursor.execute("UPDATE Investor SET firstname = %s, lastname = %s WHERE id = %s", (data['firstname'], data['lastname'], id))
+        conn.commit()
+        return jsonify({'message': 'Investor Updated'}), 200
+    except mysql.connector.Error as e:
+        return jsonify({'message': f'An error occurred: {e}'}), 500
+     
+
 
 app.run()
