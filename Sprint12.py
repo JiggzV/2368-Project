@@ -94,27 +94,31 @@ FOREIGN KEY (bondid) REFERENCES Bond(id)
 
 #In this section, We will create all of the CRUD APIs for the Investor Table
 @app.route('/api/Investors/<id>', methods = ['GET'])
-def get_investor(id):
-    cursor = conn.cursor
-    cursor.execute("SELECT * FROM Investors WHERE id = %s", (id,))
-    data = cursor.fetchone()
-    if data:
-        return jsonify({'id': data[0], 'firstname': data[1], 'lastname': data[2]})
+def get_ainvestor(id):
+    cursor = conn.cursor()
+    query = "SELECT * FROM Investor WHERE id = %s"
+    cursor.execute(query, (id,))
+    investor = cursor.fetchone()
+    if investor:
+        columns = [desc[0]for desc in cursor.description]
+        investor_dict = dict(zip(columns, investor))
+        return jsonify(investor_dict)
     else:
-        return jsonify({'message': 'Not found'})
-    
+        return jsonify({'Message': 'Not found'}), 404
+
 
 @app.route('/api/Investors/', methods = ['GET'])
-def get_all_investor():
-    cursor.execute("SELECT * FROM Investors WHERE id = %s", (id,))
-    data = cursor.fetchall()
-    if data:
-        investors = []
-        for row in data:
-            investors.append({'id': row[0], 'firstname': row[1], 'lastname': row[2]})
-        return jsonify({'investors': investors})
+def get_allinvestor():
+    cursor = conn.cursor()
+    query = "SELECT * FROM Investor"
+    cursor.execute(query)
+    investor = cursor.fetchall()
+    if investor:
+        columns = [desc[0]for desc in cursor.description]
+        investor_list = [dict(zip(columns, row)) for row in investor]
+        return jsonify(investor_list)
     else:
-        return jsonify({'message': 'Not found'})
+        return jsonify({'Message': 'Not found'}), 404
     
 
 
@@ -280,6 +284,101 @@ def delete_stock(id):
     cursor.execute(query, (id,))
     conn.commit()
     return jsonify({'message': 'Stock Deleted'}), 200
+
+''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+#This section of the code allows the user to see an Invenstor's portfolio (Stocks and Bonds)
+
+@app.route('/api/Investors/<id>/portfolio', methods=['GET'])
+def get_investor_portfolio(id):
+    try:
+        cursor = conn.cursor(dictionary=True)
+        query = """
+            SELECT 
+                'Stock' AS InvestmentType,
+                s.stockname AS InvestmentName,
+                st.quantity,
+                st.date
+            FROM 
+                Stocktransaction st
+            JOIN 
+                Stock s ON st.stockid = s.id
+            WHERE 
+                st.investorid = %s
+
+            UNION ALL
+
+            SELECT 
+                'Bond' AS InvestmentType,
+                b.bondname AS InvestmentName,
+                bt.quantity,
+                bt.date
+            FROM 
+                Bondtransaction bt
+            JOIN 
+                Bond b ON bt.bondid = b.id
+            WHERE 
+                bt.investorid = %s
+        """
+        cursor.execute(query, (id, id))
+        portfolio = cursor.fetchall()
+        if portfolio:
+            return jsonify(portfolio)
+        else:
+            return jsonify({'Message': 'No portfolio found'}), 404
+    except mysql.connector.Error as e:
+        return jsonify({'Error': str(e)}), 500
+
+
+
+''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+@app.route('/ap/Transactions/', methods=['POST'])
+def make_transaction():
+    data = request.get_json()
+
+    if 'investorid' not in data or 'id' not in data or 'quantity' not in data or 'type' not in data:
+        return jsonify({'Message': 'Missing Information'}), 400
+    
+    #B OR S
+    investor_id = data['investorid']
+    asset_id = data['id']
+    quantity = data['quantity']
+    transaction_type = data['type']     
+
+
+    try:
+        cursor = conn.cursor()
+
+        if transaction_type == 'buy':
+            if 'stock' in data:
+                cursor.execute("INSERT INTO Stocktransaction (investorid, stockid, quantity) VALUES (%s, %s, %s)",
+                               (investor_id, asset_id, quantity))
+            elif 'bond' in data:
+                cursor.execute("INSERT INTO Bondtransaction (investorid, bondid, quanitity) VALUES (%s, %s, %s)",
+                               (investor_id, asset_id, quantity))
+            else:
+                return jsonify({'Message': 'Invalid Asset'}), 400
+            
+        elif transaction_type == 'sell':
+            if 'stock' in data:
+                cursor.execute("SELECT quantity FROM Stocktransaction WHERE investorid = %s and stockid = %s",
+                               (investor_id, asset_id))
+                result = cursor.fetchone()
+                if result and result[0] >= quantity:
+                    cursor.execute("INSERT INTO Stocktransaction()")
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 app.run()
