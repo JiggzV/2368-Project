@@ -419,3 +419,6 @@ app.run()
 
 #Comments Section:
 
+#Lines 291 - 320 were adjusted with the help of AI. 
+#Lines 396 - 411 were just rewritten
+# Most of the APIs were just referenced from past Homeworks.
