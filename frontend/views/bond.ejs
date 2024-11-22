@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Bonds List</title>
+</head>
+<body>
+  <h1>List of Bonds</h1>
+  <ul>
+    <% if (bonds && bonds.length > 0) { %>
+      <% bonds.forEach(function(bond) { %>
+        <li><%= bond.bondname %> - <%= bond.abbreviation %> - $<%= bond.currentprice %></li>
+      <% }); %>
+    <% } else { %>
+      <li>No bonds available</li>
+    <% } %>
+  </ul>
+  <a href="/">Go Back Home</a>
+</body>
+</html>

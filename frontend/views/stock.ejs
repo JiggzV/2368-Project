@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Stocks List</title>
+</head>
+<body>
+  <h1>List of Stocks</h1>
+  <ul>
+    <% if (stocks && stocks.length > 0) { %>
+      <% stocks.forEach(function(stock) { %>
+        <li><%= stock.stockname %> - <%= stock.abbreviation %> - $<%= stock.currentprice %></li>
+      <% }); %>
+    <% } else { %>
+      <li>No stocks available</li>
+    <% } %>
+  </ul>
+  <a href="/">Go Back Home</a>
+</body>
+</html>

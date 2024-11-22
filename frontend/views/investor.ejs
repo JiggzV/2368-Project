@@ -1,0 +1,15 @@
+<html>
+<head>
+    <title> Manage Investors</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <h1> Investors List</h1>
+    <ul>
+        <% investors.forEach(function(investor) { %>
+            <li><%= investor.firstname %> <%= investor.lastname %></li>
+        <% }); %>
+    </ul>
+    <a href="/"> Go Back Home</a>
+</body>
+</html>
