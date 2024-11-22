@@ -336,57 +336,79 @@ def get_investor_portfolio(id):
 @app.route('/api/Transactions/', methods=['POST'])
 def make_transaction():
     data = request.get_json()
+    print("Transaction data received:", data)
 
-    if 'investorid' not in data or 'id' not in data or 'quantity' not in data or 'type' not in data:
+    # Validate required fields in the request data
+    if 'investorid' not in data:
+        print("Missing investorid in transaction data.")
+    if 'quantity' not in data:
+        print("Missing quantity in transaction data.")
+    if 'type' not in data:
+        print("Missing type in transaction data.")
+    if 'stockid' not in data and 'bondid' not in data:
+        print("Missing stockid or bondid in transaction data.")
+
+    # Return error if any required information is missing
+    if 'investorid' not in data or 'quantity' not in data or 'type' not in data or ('stockid' not in data and 'bondid' not in data):
         return jsonify({'Message': 'Missing Information'}), 400
-    
-    #B OR S
-    investor_id = data['investorid']
-    asset_id = data['id']
-    quantity = data['quantity']
-    transaction_type = data['type']     
 
+    # Extract data from the request
+    investor_id = data['investorid']
+    asset_id = data.get('stockid') or data.get('bondid')  
+    quantity = data['quantity']
+    transaction_type = data['type']
+
+    print(f"Investor ID: {investor_id}, Asset ID: {asset_id}, Quantity: {quantity}, Transaction Type: {transaction_type}")
 
     try:
         cursor = conn.cursor()
 
         if transaction_type == 'buy':
-            if 'stock' in data:
+            if 'stockid' in data:
+                # Processing a stock purchase
+                print("Processing a stock purchase...")
                 cursor.execute("INSERT INTO Stocktransaction (investorid, stockid, quantity) VALUES (%s, %s, %s)",
                                (investor_id, asset_id, quantity))
-            elif 'bond' in data:
+            elif 'bondid' in data:
+                # Processing a bond purchase
+                print("Processing a bond purchase...")
                 cursor.execute("INSERT INTO Bondtransaction (investorid, bondid, quantity) VALUES (%s, %s, %s)",
                                (investor_id, asset_id, quantity))
-            else:
-                return jsonify({'Message': 'Invalid Asset'}), 400
-            
+
         elif transaction_type == 'sell':
-            if 'stock' in data:
-                cursor.execute("SELECT quantity FROM Stocktransaction WHERE investorid = %s and stockid = %s",
+            if 'stockid' in data:
+                # Processing stock sale
+                print("Processing stock sale...")
+                cursor.execute("SELECT quantity FROM Stocktransaction WHERE investorid = %s AND stockid = %s",
                                (investor_id, asset_id))
                 result = cursor.fetchone()
-                if result and result[0] >= quantity:
+                if result and result['quantity'] >= quantity:
                     cursor.execute("INSERT INTO Stocktransaction (investorid, stockid, quantity) VALUES (%s, %s, %s)",
                                    (investor_id, asset_id, -quantity))
-                
                 else:
+                    print("Not enough stock to sell.")
                     return jsonify({'Message': 'Not enough stock to sell'}), 400
-            elif 'bond' in data:
+
+            elif 'bondid' in data:
+                # Processing bond sale
+                print("Processing bond sale...")
                 cursor.execute("SELECT quantity FROM Bondtransaction WHERE investorid = %s AND bondid = %s",
                                (investor_id, asset_id))
                 result = cursor.fetchone()
-                if result and result[0] >= quantity:
+                if result and result['quantity'] >= quantity:
                     cursor.execute("INSERT INTO Bondtransaction (investorid, bondid, quantity) VALUES (%s, %s, %s)",
                                    (investor_id, asset_id, -quantity))
                 else:
-                    return jsonify({'message': 'Not enough bonds to sell'}), 400
-            else:
-                return jsonify({'Message': 'Invalid Asset'}), 400
-            
+                    print("Not enough bonds to sell.")
+                    return jsonify({'Message': 'Not enough bonds to sell'}), 400
+
+        # Commit the transaction
         conn.commit()
+        print("Transaction completed")
         return jsonify({'Message': 'Transaction successful'}), 201
-        
+
     except mysql.connector.Error as e:
+        print(f"Database error: {e}")
         return jsonify({'Message': 'Unknown error'}), 500
                     
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''

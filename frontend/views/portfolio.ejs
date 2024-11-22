@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title> Investor's Portfolio</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <h1>Portfolio for Investor ID: <%= investorId %></h1>
+    <h2>Investments:</h2>
+
+    <ul>
+        <% if (portfolio && portfolio.length > 0) { %>
+            <% portfolio.forEach(function(item) { %>
+                <li>
+                    <strong>Type:</strong> <%= item.InvestmentType %> | 
+                    <strong>Name:</strong> <%= item.InvestmentName %> |
+                    <strong>Quantity:</strong> <%= item.quantity %>
+                </li>
+            <% }); %>
+        <% } else { %>
+            <p>No investments found for this investor.</p>
+        <% } %>
+    </ul>
+
+    <a href="/investors">Go Back to Investors List</a>
+</body>
+</html>

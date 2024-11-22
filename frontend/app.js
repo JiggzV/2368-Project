@@ -47,28 +47,27 @@ app.get('/transactions/:investorId', async (req, res) => {
 
 //Form Submissions for creating transactions
 app.post('/transactions', async (req, res) => {
-    const { investorId, assetType, stockId, bondId, quantity, transactionType} = req.body;
-    const endpoint = 
-        assetType === 'stock'
-        ? `http://localhost:5000/api/StockTransactions/`
-        : `http://localhost:5000/api/BondTransactions/`;
+    console.log('Transaction request body:', req.body);
+
+    const { investorid, assetType, stockid, bondid, quantity, transactionType} = req.body;
 
     const transactionData = {
-        investorid: investorId,
+        investorid: investorid,
         quantity: transactionType === 'sell' ? -Math.abs(quantity) : Math.abs(quantity),
+        type: transactionType,
     };
 
     if (assetType === 'stock') {
-        transactionData.stockid = stockId;
+        transactionData.stockid = stockid;
     }   else if (assetType === 'bond') {
-        transactionData.bondid = bondId;
+        transactionData.bondid = bondid;
     }
 
     try {
-        const response = await axios.post(endpoint, transactionData);
+        const response = await axios.post('http://localhost:5000/api/Transactions/', transactionData);
         console.log('Transaction successful:', response.data);
-        res.redirect(`/investors/${investorId}/portfolio`);
-    }   catch (error) {
+        res.redirect(`/investors/${investorid}/portfolio`);
+    } catch (error) {
         console.error('Error creating transaction:', error);
         res.status(500).send('Error creating transaction');
     }

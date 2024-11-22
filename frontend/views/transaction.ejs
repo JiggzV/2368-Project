@@ -20,7 +20,7 @@
 <body>
     <h1> New Transaction for Investor ID <%= investorId %></h1>
     <form action="/transactions" method="POST">
-        <input type="hidden" name="investorID" value="<% investorId %>">
+        <input type="hidden" name="investorid" value="<%= investorId %>">
 
         <label for ="assetType">Select Asset Type:</label>
         <select id="assetType" name="assetType" onchange="toggleDropdowns()">
@@ -31,7 +31,7 @@
 
         <div id="stockDropdown" class="assetDropdown">
             <label for="stock">Select Stock:</label>
-            <select id="stock" name="stockId">
+            <select id="stock" name="stockid">
                 <% stocks.forEach(function(stock) { %>
                     <option value="<%= stock.id %>"><%= stock.stockname %></option>
                 <% }); %>
@@ -40,8 +40,8 @@
 
 
         <div id="bondDropdown" class="assetDropdown" style="display:none;">
-            <label for="bond">Select Stock:</label>
-            <select id="bond" name="bondId">
+            <label for="bond">Select Bond:</label>
+            <select id="bond" name="bondid">
                 <% bonds.forEach(function(bond) { %>
                     <option value="<%= bond.id %>"><%= bond.bondname %></option>
                 <% }); %>
@@ -54,7 +54,7 @@
         <label for="transactionType">Transaction Type:</label>
         <select id="transactionType" name="transactionType">
             <option value="buy">Buy</option>
-            <option valye="sell">Sell</option>
+            <option value="sell">Sell</option>
         </select>
 
         <input type="submit" value="Submit Transaction">

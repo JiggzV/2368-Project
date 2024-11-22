@@ -10,9 +10,8 @@
             <li>
                 <%= investor.firstname %> <%= investor.lastname %>
                 <a href="/transactions/<%= investor.id %>">Create Transaction</a> |
-                <a href="/investors/<% investor.id %>/portfolio">View Portfolio</a>
+                <a href="/investors/<%= investor.id %>/portfolio">View Portfolio</a>
             </li>
-
         <% }); %>
     </ul>
     <a href="/"> Go Back Home</a>
