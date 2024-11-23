@@ -338,7 +338,6 @@ def make_transaction():
     data = request.get_json()
     print("Transaction data received:", data)
 
-    # Validate required fields in the request data
     if 'investorid' not in data:
         print("Missing investorid in transaction data.")
     if 'quantity' not in data:
@@ -348,15 +347,14 @@ def make_transaction():
     if 'stockid' not in data and 'bondid' not in data:
         print("Missing stockid or bondid in transaction data.")
 
-    # Return error if any required information is missing
     if 'investorid' not in data or 'quantity' not in data or 'type' not in data or ('stockid' not in data and 'bondid' not in data):
         return jsonify({'Message': 'Missing Information'}), 400
 
-    # Extract data from the request
     investor_id = data['investorid']
-    asset_id = data.get('stockid') or data.get('bondid')  
+    asset_id = data.get('stockid') or data.get('bondid')
     quantity = data['quantity']
     transaction_type = data['type']
+    is_stock = 'stockid' in data  
 
     print(f"Investor ID: {investor_id}, Asset ID: {asset_id}, Quantity: {quantity}, Transaction Type: {transaction_type}")
 
@@ -364,20 +362,17 @@ def make_transaction():
         cursor = conn.cursor()
 
         if transaction_type == 'buy':
-            if 'stockid' in data:
-                # Processing a stock purchase
+            if is_stock:
                 print("Processing a stock purchase...")
                 cursor.execute("INSERT INTO Stocktransaction (investorid, stockid, quantity) VALUES (%s, %s, %s)",
                                (investor_id, asset_id, quantity))
-            elif 'bondid' in data:
-                # Processing a bond purchase
+            else:
                 print("Processing a bond purchase...")
                 cursor.execute("INSERT INTO Bondtransaction (investorid, bondid, quantity) VALUES (%s, %s, %s)",
                                (investor_id, asset_id, quantity))
 
         elif transaction_type == 'sell':
-            if 'stockid' in data:
-                # Processing stock sale
+            if is_stock:
                 print("Processing stock sale...")
                 cursor.execute("SELECT quantity FROM Stocktransaction WHERE investorid = %s AND stockid = %s",
                                (investor_id, asset_id))
@@ -389,8 +384,7 @@ def make_transaction():
                     print("Not enough stock to sell.")
                     return jsonify({'Message': 'Not enough stock to sell'}), 400
 
-            elif 'bondid' in data:
-                # Processing bond sale
+            else:
                 print("Processing bond sale...")
                 cursor.execute("SELECT quantity FROM Bondtransaction WHERE investorid = %s AND bondid = %s",
                                (investor_id, asset_id))
@@ -402,7 +396,6 @@ def make_transaction():
                     print("Not enough bonds to sell.")
                     return jsonify({'Message': 'Not enough bonds to sell'}), 400
 
-        # Commit the transaction
         conn.commit()
         print("Transaction completed")
         return jsonify({'Message': 'Transaction successful'}), 201

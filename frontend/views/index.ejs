@@ -1,14 +1,41 @@
 <html>
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><%= title %></title>
-    <link rel="stylesheet" href="/css/style.css">
+
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+
 </head>
+
 <body>
-    <h1> Welcome to the Stock Brokerage System</h1>
-    <ul>
-        <li><a href="/investors">Manage Investors</a></li>
-        <li><a href="/bonds">Manage Bonds</a></li>
-        <li><a href="/stocks">Manage Stocks</a></li>
-    </ul>
+    <header class="text-center py-4">
+        <h1 style="color:red;"> Welcome to the Stock Brokerage System</h1>
+    </header>
+
+    <div class="container my-5">
+        <h3>Manage Assets</h3>
+        <ul class="list-group">
+            <li class="list-group-item">
+                <a href="/investors" class="btn btn-primary">Manage Investors</a>
+            </li>
+            <li class="list-group-item">
+                <a href="/bonds" class="btn btn-primary">Manage Bonds</a>
+            </li>
+            <li class="list-group-item">
+                <a href="/stocks" class="btn btn-primary">Manage Stocks</a>
+            </li>
+        </ul>
+    </div>
+
+    <footer class="bg-dark text-white text-center py-3">
+        <p>&copy; 2024 Floppa Brokerage. All Rights Reserved</p>
+    </footer>
+
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
 </body>
+
 </html>
