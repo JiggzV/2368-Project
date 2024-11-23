@@ -3,20 +3,46 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Stocks List</title>
-  <link rel="stylesheet" href="/css/style.css">
+    <title>Stocks List</title>
+
+    <!-- Bootstrap CSS CDN -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
 </head>
+
 <body>
-  <h1>List of Stocks</h1>
-  <ul>
-    <% if (stocks && stocks.length > 0) { %>
-      <% stocks.forEach(function(stock) { %>
-        <li><%= stock.stockname %> - <%= stock.abbreviation %> - $<%= stock.currentprice %></li>
-      <% }); %>
-    <% } else { %>
-      <li>No stocks available</li>
-    <% } %>
-  </ul>
-  <a href="/">Go Back Home</a>
+    <div class="container my-5">
+        <h2 class="text-center mb-4">List of Stocks</h2>
+
+        <div class="row">
+            <% if (stocks && stocks.length > 0) { %>
+                <% stocks.forEach(function(stock) { %>
+                    <div class="col-md-6 col-lg-4 mb-4">
+                        <div class="card shadow-sm">
+                            <div class="card-body">
+                                <h5 class="card-title"><%= stock.stockname %></h5>
+                                <h6 class="card-subtitle mb-2 text-muted">(<%= stock.abbreviation %>)</h6>
+                                <p class="card-text">
+                                    Current Price: $<%= stock.currentprice %>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                <% }); %>
+            <% } else { %>
+                <div class="col-12">
+                    <p class="text-center">No stocks available</p>
+                </div>
+            <% } %>
+        </div>
+
+        <div class="text-center mt-4">
+            <a href="/" class="btn btn-outline-primary">Go Back Home</a>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS and dependencies -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
 </html>
