@@ -3,20 +3,43 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Bonds List</title>
-  <link rel="stylesheet" href="/css/style.css">
+    <title>Bonds List</title>
+
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
-  <h1>List of Bonds</h1>
-  <ul>
-    <% if (bonds && bonds.length > 0) { %>
-      <% bonds.forEach(function(bond) { %>
-        <li><%= bond.bondname %> - <%= bond.abbreviation %> - $<%= bond.currentprice %></li>
-      <% }); %>
-    <% } else { %>
-      <li>No bonds available</li>
-    <% } %>
-  </ul>
-  <a href="/">Go Back Home</a>
+    <div class="container my-5">
+        <h2 class="text-center mb-4">List of Bonds</h2>
+
+        <div class="row">
+            <% if (bonds && bonds.length > 0) { %>
+                <% bonds.forEach(function(bond) { %>
+                    <div class="col-md-6 col-lg-4 mb-4">
+                        <div class="card shadow-sm">
+                            <div class="card-body">
+                                <h5 class="card-title"><%= bond.bondname %></h5>
+                                <h6 class="card-subtitle mb-2 text-muted">(<%= bond.abbreviation %>)</h6>
+                                <p class="card-text">
+                                    Current Price: $<%= bond.currentprice %>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                <% }); %>
+            <% } else { %>
+                <div class="col-12">
+                    <p class="text-center">No bonds available</p>
+                </div>
+            <% } %>
+        </div>
+
+        <div class="text-center mt-4">
+            <a href="/" class="btn btn-outline-primary">Go Back Home</a>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
 </html>
