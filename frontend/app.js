@@ -1,23 +1,25 @@
 const express = require('express');
 const axios = require('axios');
 const path = require('path');
+const methodOverride = require('method-override');
 
 const app = express();
 
-// Set the view engine to ejs and the views directory correctly
+// Set the view engine to EJS and set the views directory correctly
 app.set('view engine', 'ejs');
-app.set('views', path.join(__dirname, 'views')); // Ensure the path is correct
+app.set('views', path.join(__dirname, 'views')); // Adjusted to match your current folder structure
 
 // Serve static files from the public directory
-app.use('/static', express.static(path.join(__dirname,'public'))); // Ensure path is correct
+app.use('/static', express.static(path.join(__dirname, 'public'))); // Updated path
 
-// Middleware for parsing request bodies
+// Middleware for parsing request bodies and overriding HTTP methods
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
+app.use(methodOverride('_method'));
 
 // Home page route
 app.get('/', (req, res) => {
-    res.render('index', { title: 'Stock Brokerage System' }); // Ensure 'index.ejs' exists in the views folder
+    res.render('index', { title: 'Stock Brokerage System' });
 });
 
 // Investors page
@@ -27,6 +29,44 @@ app.get('/investors', async (req, res) => {
         res.render('investor', { investors: response.data });
     } catch (error) {
         res.status(500).send('Error fetching investors');
+    }
+});
+
+// Route to render the form to add a new investor
+app.get('/investors/add', (req, res) => {
+    res.render('add_investor');
+});
+
+// Form submission to add a new investor
+app.post('/investors', async (req, res) => {
+    const { firstname, lastname } = req.body;
+
+    if (!firstname || !lastname) {
+        return res.status(400).send('First name and last name are required');
+    }
+
+    try {
+        await axios.post('http://localhost:5000/api/Investors/', {
+            firstname: firstname,
+            lastname: lastname
+        });
+        res.redirect('/investors');
+    } catch (error) {
+        console.error('Error adding investor:', error);
+        res.status(500).send('Error adding investor');
+    }
+});
+
+// Route to handle deleting an investor
+app.delete('/investors/:id', async (req, res) => {
+    const investorId = req.params.id;
+
+    try {
+        await axios.delete(`http://localhost:5000/api/Investors/${investorId}`);
+        res.redirect('/investors');
+    } catch (error) {
+        console.error('Error deleting investor:', error);
+        res.status(500).send('Error deleting investor');
     }
 });
 
@@ -108,11 +148,12 @@ app.get('/stocks', async (req, res) => {
     }
 });
 
-// Starting up the server here
+// Starting up the server
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
     console.log(`Frontend server running on http://localhost:${PORT}`);
 });
+
 
 
 

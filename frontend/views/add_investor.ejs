@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Investor</title>
+    <link rel="stylesheet" href="/static/style.css"> 
+</head>
+<body>
+    <h1>Add a New Investor</h1>
+    <form action="/investors" method="POST">
+        <div>
+            <label for="firstname">First Name:</label>
+            <input type="text" id="firstname" name="firstname" required>
+        </div>
+        <div>
+            <label for="lastname">Last Name:</label>
+            <input type="text" id="lastname" name="lastname" required>
+        </div>
+        <button type="submit">Add Investor</button>
+    </form>
+    <a href="/investors">Back to Investors List</a>
+</body>
+</html>
