@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Stock</title>
+    <link rel="stylesheet" href="/static/style.css"> <!-- Add stylesheet for styling -->
+</head>
+<body>
+    <h1>Add a New Stock</h1>
+    <form action="/stocks" method="POST">
+        <div>
+            <label for="stockname">Stock Name:</label>
+            <input type="text" id="stockname" name="stockname" required>
+        </div>
+        <div>
+            <label for="abbreviation">Abbreviation:</label>
+            <input type="text" id="abbreviation" name="abbreviation" required>
+        </div>
+        <div>
+            <label for="currentprice">Current Price:</label>
+            <input type="number" step="0.01" id="currentprice" name="currentprice" required>
+        </div>
+        <button type="submit">Add Stock</button>
+    </form>
+    <a href="/stocks">Back to Stocks List</a>
+</body>
+</html>

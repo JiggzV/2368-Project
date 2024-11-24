@@ -148,6 +148,47 @@ app.get('/stocks', async (req, res) => {
     }
 });
 
+app.get('/stocks/add', (req, res) => {
+    res.render('add_stock');
+});
+
+// Form submission to add a new stock
+app.post('/stocks', async (req, res) => {
+    const { stockname, abbreviation, currentprice } = req.body;
+
+    if (!stockname || !abbreviation || !currentprice) {
+        return res.status(400).send('All fields are required');
+    }
+
+    try {
+        await axios.post('http://localhost:5000/api/Stocks/', {
+            stockname: stockname,
+            abbreviation: abbreviation,
+            currentprice: currentprice
+        });
+        res.redirect('/stocks');
+    } catch (error) {
+        console.error('Error adding stock:', error);
+        res.status(500).send('Error adding stock');
+    }
+});
+
+
+app.delete('/stocks/:id', async (req, res) => {
+    const stockId = req.params.id;
+
+    try {
+        await axios.delete(`http://localhost:5000/api/Stocks/${stockId}`);
+        res.redirect('/stocks');
+    } catch (error) {
+        console.error('Error deleting stock:', error);
+        res.status(500).send('Error deleting stock');
+    }
+});
+
+
+
+
 // Starting up the server
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {

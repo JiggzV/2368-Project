@@ -1,48 +1,47 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Stocks List</title>
-
-    <!-- Bootstrap CSS CDN -->
-    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <title>List of Stocks</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 
 <body>
-    <div class="container my-5">
-        <h2 class="text-center mb-4">List of Stocks</h2>
-
-        <div class="row">
+    <div class="container mt-5">
+        <h1 class="text-center mb-4">List of Stocks</h1>
+        
+        <!-- Stocks List -->
+        <ul class="list-group mb-4">
             <% if (stocks && stocks.length > 0) { %>
                 <% stocks.forEach(function(stock) { %>
-                    <div class="col-md-6 col-lg-4 mb-4">
-                        <div class="card shadow-sm">
-                            <div class="card-body">
-                                <h5 class="card-title"><%= stock.stockname %></h5>
-                                <h6 class="card-subtitle mb-2 text-muted">(<%= stock.abbreviation %>)</h6>
-                                <p class="card-text">
-                                    Current Price: $<%= stock.currentprice %>
-                                </p>
-                            </div>
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        <div>
+                            <strong><%= stock.stockname %></strong> - <%= stock.abbreviation %> - $<%= parseFloat(stock.currentprice).toFixed(2) %>
                         </div>
-                    </div>
+                        <form action="/stocks/<%= stock.id %>?_method=DELETE" method="POST" class="mb-0">
+                            <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                        </form>
+                    </li>
                 <% }); %>
             <% } else { %>
-                <div class="col-12">
-                    <p class="text-center">No stocks available</p>
-                </div>
+                <li class="list-group-item">No stocks available</li>
             <% } %>
-        </div>
+        </ul>
 
-        <div class="text-center mt-4">
-            <a href="/" class="btn btn-outline-primary">Go Back Home</a>
+        <!-- Add Stock Button -->
+        <div class="text-center mb-3">
+            <a href="/stocks/add" class="btn btn-primary">Add New Stock</a>
+        </div>
+        
+        <!-- Back to Home Button -->
+        <div class="text-center">
+            <a href="/" class="btn btn-success">Back to Home</a>
         </div>
     </div>
 
-    <!-- Bootstrap JS and dependencies -->
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
+
 </html>
