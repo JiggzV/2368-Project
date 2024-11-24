@@ -4,29 +4,27 @@ const path = require('path');
 
 const app = express();
 
+// Set the view engine to ejs and the views directory correctly
 app.set('view engine', 'ejs');
-app.set('views', path.join(__dirname, 'frontend', 'views'));
+app.set('views', path.join(__dirname, 'views')); // Ensure the path is correct
 
-app.use('/static', express.static(path.join(__dirname, 'frontend', 'public')));
+// Serve static files from the public directory
+app.use('/static', express.static(path.join(__dirname,'public'))); // Ensure path is correct
 
-app.use(express.urlencoded({ extended: true}));
+// Middleware for parsing request bodies
+app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
+// Home page route
 app.get('/', (req, res) => {
-    res.render('index', { title: 'Stock Brokerage System' });
+    res.render('index', { title: 'Stock Brokerage System' }); // Ensure 'index.ejs' exists in the views folder
 });
 
-app.get('/test-css', (req, res) => {
-    res.sendFile(path.join(__dirname, 'frontend/public/style.css'));
-});
-
-
-
-// Investors Page
+// Investors page
 app.get('/investors', async (req, res) => {
     try {
         const response = await axios.get('http://localhost:5000/api/Investors/');
-        res.render('investor', { investors: response.data});
+        res.render('investor', { investors: response.data });
     } catch (error) {
         res.status(500).send('Error fetching investors');
     }
@@ -44,17 +42,17 @@ app.get('/transactions/:investorId', async (req, res) => {
             stocks: stocksResponse.data,
             bonds: bondsResponse.data,
         });
-    }   catch (error) {
+    } catch (error) {
         console.error('Error fetching stocks or bonds:', error);
         res.status(500).send('Error fetching either stocks or bonds');
     }
 });
 
-//Form Submissions for creating transactions
+// Form submission for creating transactions
 app.post('/transactions', async (req, res) => {
     console.log('Transaction request body:', req.body);
 
-    const { investorid, assetType, stockid, bondid, quantity, transactionType} = req.body;
+    const { investorid, assetType, stockid, bondid, quantity, transactionType } = req.body;
 
     const transactionData = {
         investorid: investorid,
@@ -64,7 +62,7 @@ app.post('/transactions', async (req, res) => {
 
     if (assetType === 'stock') {
         transactionData.stockid = stockid;
-    }   else if (assetType === 'bond') {
+    } else if (assetType === 'bond') {
         transactionData.bondid = bondid;
     }
 
@@ -78,44 +76,47 @@ app.post('/transactions', async (req, res) => {
     }
 });
 
-//Portfolio for investors
+// Portfolio for investors
 app.get('/investors/:investorId/portfolio', async (req, res) => {
     const investorId = req.params.investorId;
     try {
         const response = await axios.get(`http://localhost:5000/api/Investors/${investorId}/portfolio`);
-        res.render('portfolio', { portfolio: response.data, investorId: investorId});
-    }   catch (error) {
-        console.error('Erro(r fetching portfolio:', error);
+        res.render('portfolio', { portfolio: response.data, investorId: investorId });
+    } catch (error) {
+        console.error('Error fetching portfolio:', error);
         res.status(500).send('Error fetching portfolio');
     }
 });
 
-
-// Bonds Page
+// Bonds page
 app.get('/bonds', async (req, res) => {
     try {
         const response = await axios.get('http://localhost:5000/api/Bonds/');
-        res.render('bond', { bonds: response.data});
+        res.render('bond', { bonds: response.data });
     } catch (error) {
         res.status(500).send('Error fetching bonds');
     }
 });
 
-// Stocks Page
+// Stocks page
 app.get('/stocks', async (req, res) => {
     try {
         const response = await axios.get('http://localhost:5000/api/Stocks/');
-        res.render('stock', { stocks: response.data});
+        res.render('stock', { stocks: response.data });
     } catch (error) {
         res.status(500).send('Error fetching stocks');
     }
 });
 
-
-
-
-// Starting up the server here:
+// Starting up the server here
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
     console.log(`Frontend server running on http://localhost:${PORT}`);
 });
+
+
+
+
+// Backend directory: CIS\2368\Project\2368-Project\backend
+
+// Frontend Directory: CIS\2368Project\2368-Project       node frontend/app.js
