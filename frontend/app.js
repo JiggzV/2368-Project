@@ -22,7 +22,7 @@ app.get('/', (req, res) => {
     res.render('index', { title: 'Stock Brokerage System' });
 });
 
-// Investors page
+// Investors page - Display list of investors
 app.get('/investors', async (req, res) => {
     try {
         const response = await axios.get('http://localhost:5000/api/Investors/');
@@ -32,7 +32,7 @@ app.get('/investors', async (req, res) => {
     }
 });
 
-// Route to render the form to add a new investor
+// Add Investor Page - Render the form for adding a new investor
 app.get('/investors/add', (req, res) => {
     res.render('add_investor');
 });
@@ -57,7 +57,7 @@ app.post('/investors', async (req, res) => {
     }
 });
 
-// Route to handle deleting an investor
+// Route to delete an investor
 app.delete('/investors/:id', async (req, res) => {
     const investorId = req.params.id;
 
@@ -70,65 +70,7 @@ app.delete('/investors/:id', async (req, res) => {
     }
 });
 
-// Rendering transaction form for the investor
-app.get('/transactions/:investorId', async (req, res) => {
-    const investorId = req.params.investorId;
-    try {
-        const stocksResponse = await axios.get('http://localhost:5000/api/Stocks/');
-        const bondsResponse = await axios.get('http://localhost:5000/api/Bonds/');
-
-        res.render('transaction', {
-            investorId: investorId,
-            stocks: stocksResponse.data,
-            bonds: bondsResponse.data,
-        });
-    } catch (error) {
-        console.error('Error fetching stocks or bonds:', error);
-        res.status(500).send('Error fetching either stocks or bonds');
-    }
-});
-
-// Form submission for creating transactions
-app.post('/transactions', async (req, res) => {
-    console.log('Transaction request body:', req.body);
-
-    const { investorid, assetType, stockid, bondid, quantity, transactionType } = req.body;
-
-    const transactionData = {
-        investorid: investorid,
-        quantity: transactionType === 'sell' ? -Math.abs(quantity) : Math.abs(quantity),
-        type: transactionType,
-    };
-
-    if (assetType === 'stock') {
-        transactionData.stockid = stockid;
-    } else if (assetType === 'bond') {
-        transactionData.bondid = bondid;
-    }
-
-    try {
-        const response = await axios.post('http://localhost:5000/api/Transactions/', transactionData);
-        console.log('Transaction successful:', response.data);
-        res.redirect(`/investors/${investorid}/portfolio`);
-    } catch (error) {
-        console.error('Error creating transaction:', error);
-        res.status(500).send('Error creating transaction');
-    }
-});
-
-// Portfolio for investors
-app.get('/investors/:investorId/portfolio', async (req, res) => {
-    const investorId = req.params.investorId;
-    try {
-        const response = await axios.get(`http://localhost:5000/api/Investors/${investorId}/portfolio`);
-        res.render('portfolio', { portfolio: response.data, investorId: investorId });
-    } catch (error) {
-        console.error('Error fetching portfolio:', error);
-        res.status(500).send('Error fetching portfolio');
-    }
-});
-
-// Bonds page
+// Bonds page - Display list of bonds
 app.get('/bonds', async (req, res) => {
     try {
         const response = await axios.get('http://localhost:5000/api/Bonds/');
@@ -138,7 +80,46 @@ app.get('/bonds', async (req, res) => {
     }
 });
 
-// Stocks page
+// Add Bond Page - Render the form for adding a new bond
+app.get('/bonds/add', (req, res) => {
+    res.render('add_bond');
+});
+
+// Form submission to add a new bond
+app.post('/bonds', async (req, res) => {
+    const { bondname, abbreviation, currentprice } = req.body;
+
+    if (!bondname || !abbreviation || !currentprice) {
+        return res.status(400).send('All fields are required');
+    }
+
+    try {
+        await axios.post('http://localhost:5000/api/Bonds/', {
+            bondname: bondname,
+            abbreviation: abbreviation,
+            currentprice: currentprice
+        });
+        res.redirect('/bonds');
+    } catch (error) {
+        console.error('Error adding bond:', error);
+        res.status(500).send('Error adding bond');
+    }
+});
+
+// Route to delete a bond
+app.delete('/bonds/:id', async (req, res) => {
+    const bondId = req.params.id;
+
+    try {
+        await axios.delete(`http://localhost:5000/api/Bonds/${bondId}`);
+        res.redirect('/bonds');
+    } catch (error) {
+        console.error('Error deleting bond:', error);
+        res.status(500).send('Error deleting bond');
+    }
+});
+
+// Stocks page - Display list of stocks
 app.get('/stocks', async (req, res) => {
     try {
         const response = await axios.get('http://localhost:5000/api/Stocks/');
@@ -148,6 +129,7 @@ app.get('/stocks', async (req, res) => {
     }
 });
 
+// Add Stock Page - Render the form for adding a new stock
 app.get('/stocks/add', (req, res) => {
     res.render('add_stock');
 });
@@ -173,7 +155,7 @@ app.post('/stocks', async (req, res) => {
     }
 });
 
-
+// Route to delete a stock
 app.delete('/stocks/:id', async (req, res) => {
     const stockId = req.params.id;
 
@@ -185,9 +167,6 @@ app.delete('/stocks/:id', async (req, res) => {
         res.status(500).send('Error deleting stock');
     }
 });
-
-
-
 
 // Starting up the server
 const PORT = process.env.PORT || 3000;
